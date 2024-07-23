@@ -2,7 +2,7 @@ package com.ilyass.admin.constant;
 
 public class SecurityConstant {
     public static final long EXPIRATION_TIME = 432_000_000; //5 days expressed in milliseconds
-    public static final String TOKEN_HEADER = "Bearer"; //ownership of token without verifing , everyone can use the token to access to the application, since the token has bearer too
+    public static final String TOKEN_PREFIX = "Bearer"; //ownership of token without verifing , everyone can use the token to access to the application, since the token has bearer too
     public static final String JWT_TOKEN_HEADER = "Jwt-Token";
     public static final String TOKEN_CANNOT_BE_VERIFIED = "Token can not be verified";
     public static final String GET_ARRAYS_LLC = "Get Arrays, LLC";
