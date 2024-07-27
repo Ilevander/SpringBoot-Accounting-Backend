@@ -4,7 +4,7 @@ import com.ilyass.admin.domain.User;
 import com.ilyass.admin.domain.UserPrincipal;
 import com.ilyass.admin.repository.UserRepository;
 import com.ilyass.admin.service.UserService;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,11 +13,12 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Date;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @Transactional
-@Qualifier("UserDetailsService")
+@Qualifier("userDetailsService")
 public class UserServiceImpl implements UserService , UserDetailsService {
 
     private UserRepository userRepository;
