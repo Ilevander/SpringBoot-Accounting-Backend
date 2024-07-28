@@ -6,10 +6,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.IOException;
@@ -60,5 +62,20 @@ public class ExceptionHandling {
     public ResponseEntity<HttpResponse> iOException(IOException exception) {
         LOGGER.error(exception.getMessage());
         return createHttpResponse(INTERNAL_SERVER_ERROR, ERROR_PROCESSING_FILE);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<HttpResponse> accessDeniedException() {
+        return createHttpResponse(FORBIDDEN, NOT_ENOUGH_PERMISSION);
+    }
+
+    @RequestMapping(ERROR_PATH)
+    public ResponseEntity<HttpResponse> notFound404() {
+        return createHttpResponse(NOT_FOUND, "There is no mapping for this URL");
+    }
+
+    @Override
+    public String getErrorPath() {
+        return ERROR_PATH;
     }
 }
