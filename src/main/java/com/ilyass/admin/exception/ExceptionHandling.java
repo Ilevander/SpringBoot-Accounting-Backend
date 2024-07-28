@@ -2,10 +2,7 @@ package com.ilyass.admin.exception;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.ilyass.admin.domain.HttpResponse;
-import com.ilyass.admin.exception.domain.EmailExistException;
-import com.ilyass.admin.exception.domain.EmailNotFoundException;
-import com.ilyass.admin.exception.domain.UserNotFoundException;
-import com.ilyass.admin.exception.domain.UsernameExistException;
+import com.ilyass.admin.exception.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
@@ -81,10 +78,10 @@ public class ExceptionHandling {
         return createHttpResponse(NOT_FOUND, "There is no mapping for this URL");
     }
 
-    @Override
-    public String getErrorPath() {
-        return ERROR_PATH;
-    }
+//    @Override
+//    public String getErrorPath() {
+//        return ERROR_PATH;
+//    }
 
     @ExceptionHandler(LockedException.class)
     public ResponseEntity<HttpResponse> lockedException() {
