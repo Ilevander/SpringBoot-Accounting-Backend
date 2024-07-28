@@ -1,8 +1,17 @@
 package com.ilyass.admin.exception;
 
+import com.ilyass.admin.domain.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+
+@RestControllerAdvice
 public class ExceptionHandling {
     final private Logger LOGGER = LoggerFactory.getLogger(getClass());
     private static final String ACCOUNT_LOCKED = "Your account has been locked. Please contact administration";
@@ -14,4 +23,13 @@ public class ExceptionHandling {
     private static final String NOT_ENOUGH_PERMISSION = "You do not have enough permission";
     public static final String ERROR_PATH = "/error";
 
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<HttpResponse> accountDisabledException() {
+        return createHttpResponse(BAD_REQUEST, ACCOUNT_DISABLED);
+    }
+
+    private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus httpStatus, String message) {
+        return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(), message), httpStatus);
+    }
 }
