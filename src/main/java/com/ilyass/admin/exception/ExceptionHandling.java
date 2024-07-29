@@ -5,6 +5,7 @@ import com.ilyass.admin.domain.HttpResponse;
 import com.ilyass.admin.exception.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ import java.util.Objects;
 import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
-public class ExceptionHandling {
+public class ExceptionHandling implements ErrorController {
     final private Logger LOGGER = LoggerFactory.getLogger(getClass());
     private static final String ACCOUNT_LOCKED = "Your account has been locked. Please contact administration";
     private static final String METHOD_IS_NOT_ALLOWED = "This request method is not allowed on this endpoint. Please send a '%s' request";
@@ -40,6 +41,11 @@ public class ExceptionHandling {
     public ResponseEntity<HttpResponse> accountDisabledException() {
         return createHttpResponse(BAD_REQUEST, ACCOUNT_DISABLED);
     }
+
+    //    @ExceptionHandler(NoHandlerFoundException.class)
+//    public ResponseEntity<HttpResponse> noHandlerFoundException(NoHandlerFoundException e) {
+//        return createHttpResponse(BAD_REQUEST, "There is no mapping for this URL");
+//    }
 
     private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus httpStatus, String message) {
         return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(), message), httpStatus);
