@@ -31,9 +31,7 @@ public class User implements Serializable {
     private Date lastLoginDate;
     private Date lastLoginDateDisplay;
     private Date joinDate;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> roles;
+    private String role;
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> authorities;
