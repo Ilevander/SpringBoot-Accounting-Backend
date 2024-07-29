@@ -2,6 +2,7 @@ package com.ilyass.admin.service.Impl;
 
 import com.ilyass.admin.domain.User;
 import com.ilyass.admin.domain.UserPrincipal;
+import com.ilyass.admin.exception.domain.UsernameExistException;
 import com.ilyass.admin.repository.UserRepository;
 import com.ilyass.admin.service.UserService;
 
@@ -48,17 +49,37 @@ public class UserServiceImpl implements UserService , UserDetailsService {
     }
 
     @Override
-    public User register(String firstname, String lastname, String username, String email) {
-        validateNewUsernameAndEmail();
+    public User register(String firstname, String lastname, String username, String email) throws UsernameExistException {
+        validateNewUsernameAndEmail(StringUtils.EMPTY , username , email);
         return null;
     }
 
-    private User validateNewUsernameAndEmail(String currentUsername , String newUsername , String newEmail) {
+    private User validateNewUsernameAndEmail(String currentUsername , String newUsername , String newEmail) throws UsernameExistException {
         if(StringUtils.isNotEmpty(currentUsername)){
             User currentUser = findUserByUsername(currentUsername);
             if(currentUser == null){
                 throw new UsernameNotFoundException("No user found by username" + currentUsername);
             }
+            User userByUsername = findUserByUsername(newUsername);
+            if(userByUsername != null && !currentUser.getId().equals(userByUsername.getId())){
+                 throw new UsernameExistException("Username already exists");
+            }
+            User userByEmail = findUserByEmail(newEmail);
+            if(userByEmail != null && !currentUser.getId().equals(userByEmail.getId())){
+                throw new UsernameNotFoundException("Email already exists");
+            }
+            return currentUser;
+        }
+         else{
+             User userByUsername = findUserByUsername(newUsername);
+             if (userByUsername != null){
+                 throw new UsernameExistException("Username already exists");
+             }
+            User userByEmail = findUserByEmail(newEmail);
+            if (userByEmail != null){
+                throw new UsernameExistException("Email already exists");
+            }
+             return null;
         }
     }
 
