@@ -5,6 +5,7 @@ import com.ilyass.admin.domain.UserPrincipal;
 import com.ilyass.admin.repository.UserRepository;
 import com.ilyass.admin.service.UserService;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,5 +45,35 @@ public class UserServiceImpl implements UserService , UserDetailsService {
             UserPrincipal userPrincipal = new UserPrincipal(user);
             return userPrincipal;
         }
+    }
+
+    @Override
+    public User register(String firstname, String lastname, String username, String email) {
+        validateNewUsernameAndEmail();
+        return null;
+    }
+
+    private User validateNewUsernameAndEmail(String currentUsername , String newUsername , String newEmail) {
+        if(StringUtils.isNotEmpty(currentUsername)){
+            User currentUser = findUserByUsername(currentUsername);
+            if(currentUser == null){
+                throw new UsernameNotFoundException("No user found by username" + currentUsername);
+            }
+        }
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return List.of();
+    }
+
+    @Override
+    public User findUserByUsername(String username) {
+        return null;
+    }
+
+    @Override
+    public User findUserByEmail(String email) {
+        return null;
     }
 }
