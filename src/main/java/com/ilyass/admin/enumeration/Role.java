@@ -1,5 +1,8 @@
 package com.ilyass.admin.enumeration;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static com.ilyass.admin.constant.Authority.*;
 
 public enum Role {
@@ -15,7 +18,7 @@ public enum Role {
         this.authorities = authorities;
     }
 
-    public String[] getAuthorities() {
-        return authorities;
+    public Set<String> getAuthorities() {
+        return new HashSet<>(Set.of(authorities));
     }
 }
