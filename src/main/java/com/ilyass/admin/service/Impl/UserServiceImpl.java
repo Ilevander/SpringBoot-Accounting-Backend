@@ -2,7 +2,8 @@ package com.ilyass.admin.service.Impl;
 
 import com.ilyass.admin.domain.User;
 import com.ilyass.admin.domain.UserPrincipal;
-import com.ilyass.admin.enumeration.Role;
+import com.ilyass.admin.exception.domain.EmailExistException;
+import com.ilyass.admin.exception.domain.UserNotFoundException;
 import com.ilyass.admin.exception.domain.UsernameExistException;
 import com.ilyass.admin.repository.UserRepository;
 import com.ilyass.admin.service.UserService;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService , UserDetailsService {
         user.setProfileImageUrl(getTemporaryProfileImageUrl());
         userRepository.save(user);
         LOGGER.info("New user password: " + password);
-        return null;
+        return user;
     }
 
     private String getTemporaryProfileImageUrl() {
