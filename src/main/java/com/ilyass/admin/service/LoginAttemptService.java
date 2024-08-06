@@ -5,8 +5,12 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+/*
+This service can be used to lock user accounts after a certain number of failed login attempts, thus improving the security of the application.
+ */
 @Service
 public class LoginAttemptService {
 
@@ -26,6 +30,23 @@ public class LoginAttemptService {
                         return 0;
                     }
                 });
+    }
+
+    //Removes a user from the cache, resetting their failed login attempts.
+    public void evictUserFromLoginAtemptCache(String username){
+        loginAttemptCache.invalidate(username);
+    }
+
+    //Adds a failed login attempt for a user. Gets the current number of attempts and increments it.
+    public void addUserToLoginAttemptCache(String username) throws ExecutionException {
+        int attempts = 0;
+            attempts = ATTEMPT_INCREMENT + loginAttemptCache.get(username);
+            loginAttemptCache.put(username , attempts);
+    }
+
+    //Checks if a user has exceeded the maximum number of failed login attempts allowed.
+    public boolean hasExceedeMaxAttempts(String username) throws ExecutionException {
+        return loginAttemptCache.get(username) >= MAXIMUM_NUMBER_OF_LOGIN_ATTEMPTS;
     }
 
 }
