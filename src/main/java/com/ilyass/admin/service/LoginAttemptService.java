@@ -38,15 +38,24 @@ public class LoginAttemptService {
     }
 
     //Adds a failed login attempt for a user. Gets the current number of attempts and increments it.
-    public void addUserToLoginAttemptCache(String username) throws ExecutionException {
+    public void addUserToLoginAttemptCache(String username)  {
         int attempts = 0;
+        try {
             attempts = ATTEMPT_INCREMENT + loginAttemptCache.get(username);
-            loginAttemptCache.put(username , attempts);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        loginAttemptCache.put(username , attempts);
     }
 
     //Checks if a user has exceeded the maximum number of failed login attempts allowed.
-    public boolean hasExceedeMaxAttempts(String username) throws ExecutionException {
-        return loginAttemptCache.get(username) >= MAXIMUM_NUMBER_OF_LOGIN_ATTEMPTS;
+    public boolean hasExceededMaxAttempts(String username)  {
+        try {
+            return loginAttemptCache.get(username) >= MAXIMUM_NUMBER_OF_LOGIN_ATTEMPTS;
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }
