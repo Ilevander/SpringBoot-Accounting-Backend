@@ -2,6 +2,7 @@ package com.ilyass.admin.service;
 
 import com.ilyass.admin.domain.User;
 import com.ilyass.admin.exception.domain.UsernameExistException;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import java.util.List;
@@ -16,4 +17,13 @@ public interface UserService {
 
     User findUserByEmail(String email);
 
+    User addNewUser(String firstName , String lastName , String username, String email , String role , boolean isNonLocked , boolean isNonActive , MultipartFile profileImage);
+
+    User updateUser(String currentUsername ,String newFirstName , String newLastName , String newEmail , String role , boolean isNonLocked , boolean isNonActive , MultipartFile profileImage);
+
+    void deleteUser(long id);
+
+    void resetPassword(String email);
+
+    User updateProfileImage(String username , MultipartFile profileImage);
 }
