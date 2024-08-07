@@ -4,6 +4,7 @@ import com.ilyass.admin.domain.User;
 import com.ilyass.admin.domain.UserPrincipal;
 import com.ilyass.admin.exception.domain.UsernameExistException;
 import com.ilyass.admin.repository.UserRepository;
+import com.ilyass.admin.service.EmailService;
 import com.ilyass.admin.service.LoginAttemptService;
 import com.ilyass.admin.service.UserService;
 
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
@@ -37,11 +39,13 @@ public class UserServiceImpl implements UserService , UserDetailsService {
     private Logger LOGGER = LoggerFactory.getLogger(getClass());
     private BCryptPasswordEncoder passwordEncoder;
     private LoginAttemptService loginAttemptService;
+    private EmailService emailService;
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, LoginAttemptService loginAttemptService) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, LoginAttemptService loginAttemptService, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.loginAttemptService = loginAttemptService;
+        this.emailService = emailService;
     }
 
     @Override
@@ -77,13 +81,13 @@ public class UserServiceImpl implements UserService , UserDetailsService {
     }
 
     @Override
-    public User register(String firstname, String lastname, String username, String email) throws UsernameExistException {
+    public User register(String firstName, String lastname, String username, String email) throws UsernameExistException, MessagingException {
         validateNewUsernameAndEmail(StringUtils.EMPTY , username , email);
         User user = new User();
         user.setUserId(generateUserId());
         String password = generatePssword();
         String encodedPassword = encodedPassword(password);
-        user.setFirstName(firstname);
+        user.setFirstName(firstName);
         user.setLastName(lastname);
         user.setUsername(username);
         user.setEmail(email);
@@ -95,7 +99,8 @@ public class UserServiceImpl implements UserService , UserDetailsService {
         user.setAuthorities(ROLE_USER.getAuthorities());
         user.setProfileImageUrl(getTemporaryProfileImageUrl());
         userRepository.save(user);
-        LOGGER.info("New user password: " + password);
+        //LOGGER.info("New user password: " + password);
+        emailService.sendNewPasswordEmail(firstName , password , email);
         return user;
     }
 
