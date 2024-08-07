@@ -2,6 +2,7 @@ package com.ilyass.admin.service.Impl;
 
 import com.ilyass.admin.domain.User;
 import com.ilyass.admin.domain.UserPrincipal;
+import com.ilyass.admin.enumeration.Role;
 import com.ilyass.admin.exception.domain.UsernameExistException;
 import com.ilyass.admin.repository.UserRepository;
 import com.ilyass.admin.service.EmailService;
@@ -19,16 +20,19 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
+import java.nio.file.FileStore;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import static com.ilyass.admin.constant.UserImplConstant.*;
 import static com.ilyass.admin.enumeration.Role.ROLE_USER;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Service
 @Transactional
@@ -82,7 +86,7 @@ public class UserServiceImpl implements UserService , UserDetailsService {
 
     @Override
     public User register(String firstName, String lastname, String username, String email) throws UsernameExistException, MessagingException {
-        validateNewUsernameAndEmail(StringUtils.EMPTY , username , email);
+        validateNewUsernameAndEmail(EMPTY , username , email);
         User user = new User();
         user.setUserId(generateUserId());
         String password = generatePssword();
@@ -97,15 +101,15 @@ public class UserServiceImpl implements UserService , UserDetailsService {
         user.setNotLocked(true);
         user.setRole(ROLE_USER.name());
         user.setAuthorities(ROLE_USER.getAuthorities());
-        user.setProfileImageUrl(getTemporaryProfileImageUrl());
+        user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
         userRepository.save(user);
         //LOGGER.info("New user password: " + password);
         emailService.sendNewPasswordEmail(firstName , password , email);
         return user;
     }
 
-    private String getTemporaryProfileImageUrl() {
-        return ServletUriComponentsBuilder.fromCurrentContextPath().path(DEFAULT_USER_IMAGE_PATH).toUriString();
+    private String getTemporaryProfileImageUrl(String username) {
+        return ServletUriComponentsBuilder.fromCurrentContextPath().path(DEFAULT_USER_IMAGE_PATH + username).toUriString();
     }
 
     private String encodedPassword(String password) {
@@ -162,5 +166,54 @@ public class UserServiceImpl implements UserService , UserDetailsService {
     @Override
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public User addNewUser(String firstName, String lastName, String username, String email, String role, boolean isNonLocked, boolean isActive, MultipartFile profileImage) throws UsernameExistException {
+        validateNewUsernameAndEmail( EMPTY,username , email);
+        User user = new User();
+        String password = generatePssword();
+        user.setUserId(generateUserId());
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setJoinDate(new Date());
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(encodedPassword(password));
+        user.setActive(isActive);
+        user.setNotLocked(isNonLocked);
+        user.setRole(getRoleEnumName(role).name());
+        user.setAuthorities(getRoleEnumName(role).getAuthorities());
+        user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
+        userRepository.save(user);
+        saveProfileImage(user , profileImage);
+        return user;
+    }
+
+    private void saveProfileImage(User user, MultipartFile profileImage) {
+    }
+
+    private Role getRoleEnumName(String role) {
+        return null;
+    }
+
+    @Override
+    public User updateUser(String currentUsername, String newFirstName, String newLastName, String newEmail, String role, boolean isNonLocked, boolean isNonActive, MultipartFile profileImage) {
+        return null;
+    }
+
+    @Override
+    public void deleteUser(long id) {
+
+    }
+
+    @Override
+    public void resetPassword(String email) {
+
+    }
+
+    @Override
+    public User updateProfileImage(String username, MultipartFile profileImage) {
+        return null;
     }
 }
