@@ -1,6 +1,7 @@
 package com.ilyass.admin.service;
 
 
+import com.sun.mail.smtp.SMTPTransport;
 import org.springframework.stereotype.Service;
 
 import javax.mail.Message;
@@ -15,6 +16,14 @@ import static com.ilyass.admin.constant.EmailConstant.*;
 
 @Service
 public class EmailService {
+
+    public void sendNewPasswordEmail(String firstName , String password , String email) throws MessagingException {
+        Message message = createEmail(firstName , password , email);
+        SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
+        smtpTransport.connect(GMAIL_SMTP_SERVER , USERNAME , PASSWORD);
+        smtpTransport.sendMessage(message, message.getAllRecipients());
+        smtpTransport.close();
+    }
 
     private Message createEmail(String firstName , String password , String email) throws MessagingException {
         Message message = new MimeMessage(getEmailSession());
