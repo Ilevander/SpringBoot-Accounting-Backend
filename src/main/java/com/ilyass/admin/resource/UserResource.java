@@ -34,13 +34,13 @@ public class UserResource extends ExceptionHandling {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody User user) throws UserNotFoundException, UsernameExistException , EmailExistException{
-        User newUser = userService.register( user.getFirstName() , user.getLastName() , user.getUsername() , user.getEmail() );
-        return new ResponseEntity<>(newUser , OK);
+    public ResponseEntity<User> register(@RequestBody User user) throws UserNotFoundException, UsernameExistException, EmailExistException {
+        User newUser = userService.register(user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail());
+        return new ResponseEntity<>(newUser, OK);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestBody User user) throws UserNotFoundException, UsernameExistException , EmailExistException{
+    public ResponseEntity<User> login(@RequestBody User user){
               authenticate(user.getUsername() , user.getPassword());
               User loginUser = userService.findUserByUsername(user.getUsername());
               UserPrincipal userPrincipal = new UserPrincipal(loginUser);
