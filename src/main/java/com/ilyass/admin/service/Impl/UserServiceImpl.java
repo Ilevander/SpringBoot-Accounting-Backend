@@ -190,6 +190,23 @@ public class UserServiceImpl implements UserService , UserDetailsService {
         return user;
     }
 
+    @Override
+    public User updateUser(String currentUsername, String newFirstName, String newLastName,String newUsername ,  String newEmail, String role, boolean isNonLocked, boolean isActive, MultipartFile profileImage) throws UsernameExistException {
+        User currentUser = validateNewUsernameAndEmail( currentUsername ,newUsername , newEmail);
+        currentUser.setUserId(generateUserId());
+        currentUser.setFirstName(newFirstName);
+        currentUser.setLastName(newLastName);
+        currentUser.setUsername(newUsername);
+        currentUser.setEmail(newEmail);
+        currentUser.setActive(isActive);
+        currentUser.setNotLocked(isNonLocked);
+        currentUser.setRole(getRoleEnumName(role).name());
+        userRepository.save(currentUser);
+        saveProfileImage(currentUser , profileImage);
+        return currentUser;
+    }
+
+
     private void saveProfileImage(User user, MultipartFile profileImage) {
     }
 
@@ -197,10 +214,6 @@ public class UserServiceImpl implements UserService , UserDetailsService {
         return null;
     }
 
-    @Override
-    public User updateUser(String currentUsername, String newFirstName, String newLastName, String newEmail, String role, boolean isNonLocked, boolean isNonActive, MultipartFile profileImage) {
-        return null;
-    }
 
     @Override
     public void deleteUser(long id) {
