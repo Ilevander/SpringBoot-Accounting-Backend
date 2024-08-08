@@ -3,6 +3,7 @@ package com.ilyass.admin.service.Impl;
 import com.ilyass.admin.domain.User;
 import com.ilyass.admin.domain.UserPrincipal;
 import com.ilyass.admin.enumeration.Role;
+import com.ilyass.admin.exception.domain.EmailNotFoundException;
 import com.ilyass.admin.exception.domain.UsernameExistException;
 import com.ilyass.admin.repository.UserRepository;
 import com.ilyass.admin.service.EmailService;
@@ -165,7 +166,7 @@ public class UserServiceImpl implements UserService , UserDetailsService {
 
     @Override
     public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findUserByEmail(email);
     }
 
     @Override
@@ -217,11 +218,19 @@ public class UserServiceImpl implements UserService , UserDetailsService {
 
     @Override
     public void deleteUser(long id) {
-
+          userRepository.deleteById(id);
     }
 
     @Override
-    public void resetPassword(String email) {
+    public void resetPassword(String email) throws MessagingException, EmailNotFoundException {
+        User user = userRepository.findUserByEmail(email);
+        if (user == null){
+            throw new EmailNotFoundException(NO_USER_FOUND_BY_EMAIL + email);
+        }
+        String password = generatePssword();
+        user.setPassword(encodedPassword(password));
+        userRepository.save(user);
+        emailService.sendNewPasswordEmail(user.getFirstName() , password , user.getEmail());
 
     }
 
