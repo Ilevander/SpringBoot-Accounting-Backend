@@ -1,15 +1,15 @@
 package com.ilyass.admin.resource;
 
+import com.ilyass.admin.domain.HttpResponse;
 import com.ilyass.admin.domain.User;
 import com.ilyass.admin.domain.UserPrincipal;
 import com.ilyass.admin.exception.ExceptionHandling;
-import com.ilyass.admin.exception.domain.EmailExistException;
-import com.ilyass.admin.exception.domain.UserNotFoundException;
-import com.ilyass.admin.exception.domain.UsernameExistException;
+import com.ilyass.admin.exception.domain.*;
 import com.ilyass.admin.service.UserService;
 import com.ilyass.admin.utility.JWTTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.mail.MessagingException;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.ilyass.admin.constant.SecurityConstant.JWT_TOKEN_HEADER;
 import static org.springframework.http.HttpStatus.OK;
@@ -26,6 +27,8 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping(path={"/","/user"})
 public class UserResource extends ExceptionHandling {
+
+    public static final String EMAIL_SENT = "An email with a new password was sent to: ";
 
     private UserService userService;
     private AuthenticationManager authenticationManager;
@@ -66,6 +69,45 @@ public class UserResource extends ExceptionHandling {
         User newUser = userService.addNewUser(firstName , lastName , username , email , role
                 , Boolean.parseBoolean(isNonLocked) , Boolean.parseBoolean(isActive) , profileImage);
         return new ResponseEntity<>(newUser , OK);
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<User> update(@RequestParam("currentUsername") String currentUsername,
+                                       @RequestParam("firstName") String firstName,
+                                       @RequestParam("lastName") String lastName,
+                                       @RequestParam("username") String username,
+                                       @RequestParam("email") String email,
+                                       @RequestParam("role") String role,
+                                       @RequestParam("isActive") String isActive,
+                                       @RequestParam("isNonLocked") String isNonLocked,
+                                       @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
+        User updatedUser = userService.updateUser(currentUsername, firstName, lastName, username,email, role, Boolean.parseBoolean(isNonLocked), Boolean.parseBoolean(isActive), profileImage);
+        return new ResponseEntity<>(updatedUser, OK);
+    }
+
+
+    @GetMapping("/find/{username}")
+    public ResponseEntity<User> getUser(@PathVariable("username") String username) {
+        User user = userService.findUserByUsername(username);
+        return new ResponseEntity<>(user, OK);
+    }
+
+
+    @GetMapping("/list")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getUsers();
+        return new ResponseEntity<>(users, OK);
+    }
+
+    @GetMapping("/resetpassword/{email}")
+    public ResponseEntity<HttpResponse> resetPassword(@PathVariable("email") String email) throws MessagingException, EmailNotFoundException, EmailNotFoundException {
+        userService.resetPassword(email);
+        return response(OK, EMAIL_SENT + email);
+    }
+
+    private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
+        return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(),
+                message), httpStatus);
     }
 
     private HttpHeaders getJwtHeader(UserPrincipal user) {
