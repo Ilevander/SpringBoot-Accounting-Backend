@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static com.ilyass.admin.constant.SecurityConstant.JWT_TOKEN_HEADER;
@@ -29,6 +35,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class UserResource extends ExceptionHandling {
 
     public static final String EMAIL_SENT = "An email with a new password was sent to: ";
+    public static final String USER_DELETED_SUCCESSFULLY = "User deleted successfully";
 
     private UserService userService;
     private AuthenticationManager authenticationManager;
@@ -109,6 +116,20 @@ public class UserResource extends ExceptionHandling {
         return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(),
                 message), httpStatus);
     }
+
+    @DeleteMapping("/delete/{username}")
+    @PreAuthorize("hasAnyAuthority('user:delete')")
+    public ResponseEntity<HttpResponse> deleteUser(@PathVariable("username") String username) throws IOException {
+        userService.deleteUser(Long.parseLong(username));
+        return response(OK, USER_DELETED_SUCCESSFULLY);
+    }
+
+    @PostMapping("/updateProfileImage")
+    public ResponseEntity<User> updateProfileImage(@RequestParam("username") String username, @RequestParam(value = "profileImage") MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException {
+        User user = userService.updateProfileImage(username, profileImage);
+        return new ResponseEntity<>(user, OK);
+    }
+
 
     private HttpHeaders getJwtHeader(UserPrincipal user) {
         HttpHeaders headers = new HttpHeaders();
