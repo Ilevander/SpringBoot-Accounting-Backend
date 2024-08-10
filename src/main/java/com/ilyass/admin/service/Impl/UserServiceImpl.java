@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService , UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
+        User user = userRepository.findUserByUsername(username);
         if (user == null) {
             LOGGER.error(NO_USER_FOUND_BY_USERNAME+ username);
             throw new UsernameNotFoundException(NO_USER_FOUND_BY_USERNAME + username);
@@ -168,7 +168,7 @@ public class UserServiceImpl implements UserService , UserDetailsService {
 
     @Override
     public User findUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findUserByUsername(username);
     }
 
     @Override

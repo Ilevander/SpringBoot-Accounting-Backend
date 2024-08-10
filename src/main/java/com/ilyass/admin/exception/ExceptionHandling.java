@@ -42,10 +42,7 @@ public class ExceptionHandling implements ErrorController {
         return createHttpResponse(BAD_REQUEST, ACCOUNT_DISABLED);
     }
 
-    //    @ExceptionHandler(NoHandlerFoundException.class)
-//    public ResponseEntity<HttpResponse> noHandlerFoundException(NoHandlerFoundException e) {
-//        return createHttpResponse(BAD_REQUEST, "There is no mapping for this URL");
-//    }
+
 
     private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus httpStatus, String message) {
         return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(), message), httpStatus);
@@ -84,10 +81,7 @@ public class ExceptionHandling implements ErrorController {
         return createHttpResponse(NOT_FOUND, "There is no mapping for this URL");
     }
 
-//    @Override
-//    public String getErrorPath() {
-//        return ERROR_PATH;
-//    }
+
 
     @ExceptionHandler(LockedException.class)
     public ResponseEntity<HttpResponse> lockedException() {

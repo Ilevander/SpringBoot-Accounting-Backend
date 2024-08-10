@@ -5,7 +5,7 @@ import com.ilyass.admin.domain.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    User findByUsername(String username);
+    User findUserByUsername(String username);
 
     User findUserByEmail(String email);
 }

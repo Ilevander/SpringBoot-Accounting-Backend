@@ -2,7 +2,6 @@ package com.ilyass.admin.filter;
 
 import com.ilyass.admin.constant.SecurityConstant;
 import com.ilyass.admin.utility.JWTTokenProvider;
-import com.mysql.cj.x.protobuf.Mysqlx;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;

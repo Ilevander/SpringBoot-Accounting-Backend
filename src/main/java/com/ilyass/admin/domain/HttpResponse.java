@@ -2,7 +2,6 @@ package com.ilyass.admin.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
@@ -17,6 +16,8 @@ public class HttpResponse {
     private HttpStatus httpStatus;
     private String reason;
     private String message;
+
+    //public HttpResponse() {}
 
     public HttpResponse(int httpStatusCode, HttpStatus httpStatus, String reason, String message) {
         this.timestamp = new Date();

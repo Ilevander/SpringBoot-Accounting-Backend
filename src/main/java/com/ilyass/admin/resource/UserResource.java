@@ -63,11 +63,26 @@ public class UserResource extends ExceptionHandling {
               UserPrincipal userPrincipal = new UserPrincipal(loginUser);
               HttpHeaders jwtHeader = getJwtHeader(userPrincipal);
               return new ResponseEntity<>(loginUser , jwtHeader, OK);
+    }
 
+    private void authenticate(String username, String password) {
+        System.out.println("Authenticating user: " + username);
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        } catch (Exception e) {
+            System.out.println("Authentication failed for user: " + username + ", reason: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    private HttpHeaders getJwtHeader(UserPrincipal user) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(JWT_TOKEN_HEADER , jwtTokenProvider.generateJwtToken(user));
+        return headers;
     }
 
     @PostMapping("/add")
-    public ResponseEntity<User> addnNewUser(@RequestParam("firstName") String firstName,
+    public ResponseEntity<User> addNewUser(@RequestParam("firstName") String firstName,
                                             @RequestParam("lastName") String lastName,
                                             @RequestParam("username") String username,
                                             @RequestParam("email") String email,
@@ -151,13 +166,4 @@ public class UserResource extends ExceptionHandling {
         return byteArrayOutputStream.toByteArray();
     }
 
-    private HttpHeaders getJwtHeader(UserPrincipal user) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(JWT_TOKEN_HEADER , jwtTokenProvider.generateJwtToken(user));
-        return headers;
-    }
-
-    private void authenticate(String username , String password){
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-    }
 }
