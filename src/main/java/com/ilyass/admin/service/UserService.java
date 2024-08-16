@@ -1,8 +1,7 @@
 package com.ilyass.admin.service;
 
 import com.ilyass.admin.domain.User;
-import com.ilyass.admin.exception.domain.EmailNotFoundException;
-import com.ilyass.admin.exception.domain.UsernameExistException;
+import com.ilyass.admin.exception.domain.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
@@ -19,11 +18,11 @@ public interface UserService {
 
     User findUserByEmail(String email);
 
-    User addNewUser(String firstName , String lastName , String username, String email , String role , boolean isNonLocked , boolean isActive , MultipartFile profileImage) throws UsernameExistException, IOException;
+    User addNewUser(String firstName, String lastName, String username, String email, String role, boolean isNonLocked, boolean isActive, MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException, NotAnImageFileException;
 
     User updateUser(String currentUsername ,String newFirstName , String newLastName , String newUsername , String newEmail , String role , boolean isNonLocked , boolean isActive , MultipartFile profileImage) throws UsernameExistException, IOException;
 
-    void deleteUser(long id);
+    void deleteUser(String username)throws IOException;
 
     void resetPassword(String email) throws MessagingException, EmailNotFoundException;
 
